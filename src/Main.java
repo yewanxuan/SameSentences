@@ -9,42 +9,59 @@ public class Main {
 
     static final String txtFilePath = Config.get("txtFilePath");
 
-    public static void main(String args[]) throws InterruptedException {
-
-        for (int k = 0; k < 1; k++) {
-            File afile = new File(txtFilePath + "a.txt");
-            File bfile = new File(txtFilePath + "b.txt");
-            long minFileLength = afile.length() < bfile.length() ? afile.length(): bfile.length();
-            int bucketNum = (int) (minFileLength / usedMemroy / 2 + 1);
-
-            LinkedBlockingQueue<Record> firstQueue = new LinkedBlockingQueue(queueLength);
-            AtomicBoolean readDone = new AtomicBoolean(false);
-
-            TextApart.cleanTextPath();
-            TextApart txtApart = new TextApart(firstQueue, bucketNum, readDone);
-            TextReader aTxtReader = new TextReader("a.txt", firstQueue);
-            TextReader bTxtReader = new TextReader("b.txt", firstQueue);
-
-            aTxtReader.start();
-            bTxtReader.start();
-            txtApart.start();
-
-            aTxtReader.join();
-            bTxtReader.join();
-            readDone.set(true);
-            txtApart.join();
-
-            for (int i = 0; i < bucketNum; i++) {
-                File aFilepart = new File(txtFilePath + "a.txt_" + i);
-                File bFilepart = new File(txtFilePath + "b.txt_" + i);
-                if (aFilepart.length() < usedMemroy || bFilepart.length() < usedMemroy) {
-                    Compare compare = new Compare(aFilepart, bFilepart);
-                    compare.getResult();
-                    aFilepart.delete();
-                    bFilepart.delete();
-                }
-            }
+    private static void onceResult(File afile, File bfile) throws InterruptedException {
+        if(!afile.exists() || !bfile.exists()) {
+            return;
         }
 
+        long minFileLength = afile.length() < bfile.length() ? afile.length(): bfile.length();
+        int diskBucketNum = (int) (minFileLength / usedMemroy + 1);
+        System.out.println(afile.getName() + diskBucketNum);
+
+        if (minFileLength < usedMemroy) {
+            File aFilepart = new File(afile.getAbsolutePath() + "_0");
+            File bFilepart = new File(bfile.getAbsolutePath() + "_0");
+            Compare compare = new Compare(aFilepart, bFilepart);
+            compare.getResult();
+            return;
+        }
+
+        LinkedBlockingQueue<Record> firstQueue = new LinkedBlockingQueue(queueLength);
+        AtomicBoolean readDone = new AtomicBoolean(false);
+        TextApart txtApart = new TextApart(firstQueue, diskBucketNum, readDone);
+        TextReader aTxtReader = new TextReader(afile, firstQueue);
+        TextReader bTxtReader = new TextReader(bfile, firstQueue);
+        aTxtReader.start();
+        bTxtReader.start();
+        txtApart.start();
+        aTxtReader.join();
+        bTxtReader.join();
+        readDone.set(true);
+        txtApart.join();
+
+        for (int i = 0; i < diskBucketNum; i++) {
+            File aFilepart = new File(afile.getAbsolutePath() + "_" + i);
+            File bFilepart = new File(bfile.getAbsolutePath() + "_" + i);
+            if (aFilepart.length() < usedMemroy || bFilepart.length() < usedMemroy) {
+                Compare compare = new Compare(aFilepart, bFilepart);
+                compare.getResult();
+                //aFilepart.delete();
+                //bFilepart.delete();
+            } else {
+                onceResult(aFilepart, bFilepart);
+            }
+        }
+       return;
+    }
+
+    public static void main(String args[]) {
+        TextApart.cleanTextPath();
+        File afile = new File(txtFilePath + "a.txt");
+        File bfile = new File(txtFilePath + "b.txt");
+        try {
+            onceResult(afile, bfile);
+        } catch(InterruptedException e) {
+            System.out.println(e);
+        }
     }
 }

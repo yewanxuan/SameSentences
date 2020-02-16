@@ -75,6 +75,7 @@ public class Compare {
                         continue;
                     } else if (save.compareTo(record) == 0) {
                         fileWritter.write(Record.getResult(save, record));
+                        System.out.println(Record.getResult(save, record));
                     }
                 }
             }

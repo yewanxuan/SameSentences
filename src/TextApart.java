@@ -18,7 +18,10 @@ public class TextApart extends Thread{
     }
 
     private void writeApart(Record record) {
-        int bucket = record.getMD5() % bucketNum;
+        int bucket = 0;
+        if (bucketNum != 0) {
+            bucket = record.getMD5() % bucketNum;
+        }
         try{
             String input = record.toString();
             String txtPrefix = txtFilePath + record.from;
