@@ -1,19 +1,42 @@
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.util.concurrent.LinkedBlockingQueue;
 
-public class TextReader extends Thread{
+public class TextHash{
+    int bucketNum;
     File file;
-    String fileFrom;
-    LinkedBlockingQueue<Record> queue;
     boolean original = false;
-    TextReader(File file, LinkedBlockingQueue<Record> queue) {
+    static final String txtFilePath = Config.get("txtFilePath");
+    String fileFrom;
+    String txtPrefix;
+    TextHash(int bucket, File file) {
         this.fileFrom = file.getName();
+        this.txtPrefix = txtFilePath + fileFrom;
+        this.bucketNum = bucket;
         this.file = file;
-        this.queue = queue;
         if (this.fileFrom.indexOf("_") == -1) {
             this.original = true;
+        }
+    }
+
+    private void writeApart(Record record) {
+        int bucket = 0;
+        if (bucketNum != 0) {
+            bucket = record.getMD5() % bucketNum;
+        }
+        try{
+            String input = record.toString();
+
+            File file = new File(txtPrefix + "_" + bucket);
+            if(!file.exists()){
+                file.createNewFile();
+            }
+            FileWriter fileWritter = new FileWriter(file.getName(),true);
+            fileWritter.write(input);
+            fileWritter.close();
+        } catch(IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -35,15 +58,15 @@ public class TextReader extends Thread{
                     record.content = line.strip();
                     record.lineNum = ++count;
                     record.from = fileFrom;
-                    queue.put(record);
+                    record.md5Encode = Md5.md5Encode(record.content);
+                    writeApart(record);
                 } else {
                     Record record = new Record(line, fileFrom);
-                    queue.put(record);
+                    writeApart(record);
                 }
                 line = bufferedReader.readLine();
             }
-
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         } finally {
             try {
@@ -54,5 +77,7 @@ public class TextReader extends Thread{
             }
         }
     }
+
+
 
 }
