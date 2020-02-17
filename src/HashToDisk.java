@@ -3,19 +3,19 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-public class TextHash{
+public class HashToDisk {
     int bucketNum;
     File file;
     boolean original = false;
     static final String txtFilePath = Config.get("txtFilePath");
-    String fileFrom;
-    String txtPrefix;
-    TextHash(int bucket, File file) {
-        this.fileFrom = file.getName();
-        this.txtPrefix = txtFilePath + fileFrom;
+    String filename;
+    String pathPrefix;
+    HashToDisk(int bucket, File file) {
+        this.filename = file.getName();
+        this.pathPrefix = txtFilePath + filename;
         this.bucketNum = bucket;
         this.file = file;
-        if (this.fileFrom.indexOf("_") == -1) {
+        if (this.filename.indexOf("_") == -1) {
             this.original = true;
         }
     }
@@ -28,7 +28,7 @@ public class TextHash{
         try{
             String input = record.toString();
 
-            File file = new File(txtPrefix + "_" + bucket);
+            File file = new File(pathPrefix + "_" + bucket);
             if(!file.exists()){
                 file.createNewFile();
             }
@@ -57,11 +57,11 @@ public class TextHash{
                     Record record = new Record();
                     record.content = line.strip();
                     record.lineNum = ++count;
-                    record.from = fileFrom;
+                    record.filename = filename;
                     record.md5Encode = Md5.md5Encode(record.content);
                     writeApart(record);
                 } else {
-                    Record record = new Record(line, fileFrom);
+                    Record record = new Record(line, filename);
                     writeApart(record);
                 }
                 line = bufferedReader.readLine();
@@ -77,7 +77,5 @@ public class TextHash{
             }
         }
     }
-
-
 
 }

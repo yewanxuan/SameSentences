@@ -6,11 +6,8 @@ import java.security.NoSuchAlgorithmException;
 
 public class Md5 {
 
-    // 获得MD5摘要算法的 MessageDigest 对象
     private static MessageDigest _mdInst = null;
-    //自定义的字符串组合(为安全考虑，建议使用自定义的密码字符串组合)
     private static char hexDigits[] = {'8', '9', '7', '4', '5', '0', '2', '6', '3', '1', 'C', 'D', 'A', 'B', 'E', 'F'};
-    //默认的密码字符串组合，用来将字节转换成 16 进制表示的字符,apache校验下载的文件的正确性用的就是默认的这个组合（使用这个的话用在线解密工具可能会破解）
     private static char hexDigits2[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 
     private static MessageDigest getMdInst() {

@@ -3,7 +3,7 @@ public class Record implements Comparable<Record>{
     public String content;
     public String md5Encode = "";
     public int md5ToInt = 0;
-    public String from;
+    public String filename;
 
     public static int usedMemory() {
         return 100 * 2 + 4 + 16;
@@ -15,7 +15,7 @@ public class Record implements Comparable<Record>{
 
     public int getMD5() {
         if (md5ToInt == 0 && md5Encode != "") {
-            int offset = this.from.lastIndexOf('_') + 1;
+            int offset = this.filename.lastIndexOf('_') + 1;
             this.md5ToInt = Md5.byteToInt(this.md5Encode, offset);
         }
         return this.md5ToInt;
@@ -24,7 +24,7 @@ public class Record implements Comparable<Record>{
     static public String getResult(Record one, Record two) {
         Record atxt = one;
         Record btxt = two;
-        if (two.from.indexOf("a.txt") != -1) {
+        if (two.filename.indexOf("a.txt") != -1) {
             atxt = two;
             btxt = one;
         }
@@ -33,7 +33,7 @@ public class Record implements Comparable<Record>{
 
     Record() { }
     Record(String line, String from) {
-        this.from = from;
+        this.filename = from;
         if (line.split("\\|").length == 3) {
             md5Encode = line.split("\\|")[0];
             lineNum = Integer.parseInt(line.split("\\|")[1]);
