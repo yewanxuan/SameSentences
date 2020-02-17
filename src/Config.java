@@ -1,9 +1,3 @@
-/***************************************************************************
- *
- * Copyright (c) 2019 Baidu.com, Inc. All Rights Reserved
- * ConfigUtil.class 2019/11/13 19:15:43 yewanxuan
- *
- **************************************************************************/
 
 import java.io.File;
 import java.io.FileInputStream;

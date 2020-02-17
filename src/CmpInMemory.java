@@ -80,6 +80,7 @@ public class CmpInMemory {
                     }
                 }
             }
+            fileWritter.flush();
             fileWritter.close();
 
 
