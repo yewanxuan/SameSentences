@@ -1,10 +1,11 @@
 import java.io.File;
 
 public class Main {
-    static final Long usedMemroy = Long.parseLong(Config.get("usedMemroy"));
+    static final Long usedMemroy = Long.parseLong(Config.get("usedMemroy")) / 2;
     static final String txtFilePath = Config.get("txtFilePath");
 
     public static void main(String args[]) throws InterruptedException {
+        long preTime = System.currentTimeMillis();
         Operator.cleanTextPath();
 
         File afile = new File(txtFilePath + "a.txt");
@@ -21,5 +22,7 @@ public class Main {
                 System.out.println(e);
             }
         }
+        long endTime = System.currentTimeMillis();
+        System.out.println(endTime - preTime);
     }
 }

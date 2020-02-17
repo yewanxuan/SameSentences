@@ -24,7 +24,7 @@ public class Record implements Comparable<Record>{
     static public String getResult(Record one, Record two) {
         Record atxt = one;
         Record btxt = two;
-        if (two.filename.indexOf("a.txt") != -1) {
+        if (one.filename.indexOf("a.txt") == -1) {
             atxt = two;
             btxt = one;
         }
@@ -44,6 +44,9 @@ public class Record implements Comparable<Record>{
 
     @Override
     public int compareTo(Record record) {
+        if(record == null) {
+            return -1;
+        }
         int ret = this.getMD5() - record.getMD5();
         if(ret == 0) {
             ret = this.content.compareTo(record.content);

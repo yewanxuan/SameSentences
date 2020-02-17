@@ -51,6 +51,9 @@ public class Md5 {
     public static int byteToInt(String str, int offset) {
         offset = offset % 28;
         byte[] byteArray = str.getBytes();
+        if (byteArray.length == 0) {
+            return 0;
+        }
         int value = byteArray[0 + offset];
         value |= byteArray[1 + offset] << 8;
         value |= byteArray[2 + offset] << 16;
