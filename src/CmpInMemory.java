@@ -6,20 +6,21 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeSet;
 
-public class CompareInMemory {
+public class CmpInMemory {
     File base;
     File compare;
     File result = new File(Config.get("txtFilePath") + "result.txt");
     int memBucket;
 
-    CompareInMemory(File aFile, File bFile) {
+    CmpInMemory(File aFile, File bFile) {
         base = aFile;
         compare = bFile;
         if (aFile.length() > bFile.length()) {
             base = bFile;
             compare = aFile;
         }
-        memBucket = (int)((base.length() / Record.usedMemory())* 2 + 1);
+        memBucket = (int)((base.length() / Record.usedMemory()) *
+                           Float.parseFloat(Config.get("memRedundancy")) + 1);
     }
 
     private Map<Integer, TreeSet<Record>> baseHashMap(File base) {
