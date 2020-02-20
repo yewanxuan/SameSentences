@@ -6,7 +6,7 @@ public class Record implements Comparable<Record>{
     public String filename;
 
     public static int usedMemory() {
-        return 100 * 2 + 4 + 16;
+        return 4 + 100 * 2 + 128 + 32 + 8;
     }
 
     public String toString() {
